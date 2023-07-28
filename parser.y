@@ -135,10 +135,18 @@ Stmt:	SEMICOLON {}
 
 ;
 
-IfStmt:	IF LPAREN Expr RPAREN LBRACE VarDecl RBRACE {}
-	| IF LPAREN Expr RPAREN LBRACE IfStmt RBRACE {}
+IfStmt: IF LPAREN Expr RPAREN LBRACE StmtList RBRACE {
+    $$ = AST_If("IF", "", $3);
+    $$->left = $6;
+    $$->right = NULL;
+}
+| IF LPAREN Expr RPAREN LBRACE StmtList RBRACE ElseStmt {
+    $$ = AST_IfElse("IF_ELSE", "", $3, $6, $8);
+}
 
-ElseStmt:	ELSE LBRACE VarDecl RBRACE
+ElseStmt: ELSE LBRACE StmtList RBRACE {
+    $$ = $3;
+}
 
 Expr:	ID EQ REC { 
 		printf("\n RECOGNIZED RULE: Simplest expression\n"); 
@@ -248,34 +256,52 @@ WriteStmt:	WRITE ID {
 		}
 ;
 
-REC:	NUMBER MATHOP REC {
-		result = result * $1;
+REC: NUMBER { 
+    printf("\n RECOGNIZED RULE: ADD STATEMENT NUM END\n");
+    $$ = AST_Type("NUM", "", "");
+    $$->value = $1;
 }
-	
-	| ID MATHOP REC {
-		symTabAccess();
-		char id1[50];
-		int id2 = getValue($1, currentScope);
-		result = result - id2;
-	}
 
-	| NUMBER {
-        	printf("\n RECOGNIZED RULE: ADD STATEMENT NUM END\n");
-		result = result + $1;
-	}
+| ID {
+    printf("\n RECOGNIZED RULE: ADD STATEMENT ID END \n");
+    symTabAccess();
+    int id_value = getValue($1, currentScope);
+    $$ = AST_Type("ID", "", "");
+    $$->value = id_value;
+}
 
-	| ID {
-        	printf("\n RECOGNIZED RULE: ADD STATEMENT ID END \n");
-		symTabAccess();
-		char id1[50];
-		int id2 = getValue($1, currentScope);
-		result = result + id2;
-	}
+| NUMBER MATHOP REC {
+    $$ = AST_BinaryExpression($2, "", "");
+    if (strcmp($2, "+") == 0) {
+        $$->value = $1 + $3->value;
+    } else if (strcmp($2, "-") == 0) {
+        $$->value = $1 - $3->value;
+    } else if (strcmp($2, "*") == 0) {
+        $$->value = $1 * $3->value;
+    } else if (strcmp($2, "/") == 0) {
+        $$->value = $1 / $3->value;
+    }
+}
+
+| ID MATHOP REC {
+    symTabAccess();
+    int id_value = getValue($1, currentScope);
+    $$ = AST_BinaryExpression($2, "", "");
+    if (strcmp($2, "+") == 0) {
+        $$->value = id_value + $3->value;
+    } else if (strcmp($2, "-") == 0) {
+        $$->value = id_value - $3->value;
+    } else if (strcmp($2, "*") == 0) {
+        $$->value = id_value * $3->value;
+    } else if (strcmp($2, "/") == 0) {
+        $$->value = id_value / $3->value;
+    }
+}
 ;
 
 Array:	LBRACK RBRACK {}
-		| LBRACK NUMBER RBRACK {}
-		| LBRACK ID RBRACK {}
+	| LBRACK NUMBER RBRACK {}
+	| LBRACK ID RBRACK {}
 ;
 
 

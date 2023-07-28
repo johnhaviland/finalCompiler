@@ -1,0 +1,16 @@
+int x;
+int y;
+
+x = 10;
+
+if (x > 8){
+  int z;
+  z = 12;
+
+  if (z < 10){
+    write z;
+  }
+  else{
+    write x;
+  }
+}

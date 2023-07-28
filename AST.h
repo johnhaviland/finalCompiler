@@ -65,6 +65,50 @@ struct AST * AST_Write(char nodeType[50], char LHS[50], char RHS[50]){
 	return ASTtype;
 }
 
+struct AST * AST_If(char nodeType[50], char LHS[50], struct AST * thenBranch){
+	struct AST * ASTif = malloc(sizeof(struct AST));
+	strcpy(ASTif->nodeType, nodeType);
+	strcpy(ASTif->LHS, LHS);
+	strcpy(ASTif->RHS, "");
+
+	ASTif->left = thenBranch;
+	ASTif->right = NULL;
+
+	return ASTif;
+}
+
+struct AST * AST_IfElse(char nodeType[50], char LHS[50], struct AST * thenBranch, struct AST * elseBranch){
+	struct AST * ASTifelse = malloc(sizeof(struct AST));
+	strcpy(ASTifelse->nodeType, nodeType);
+	strcpy(ASTifelse->LHS, LHS);
+	strcpy(ASTifelse->RHS, "");
+
+	ASTifelse->left = thenBranch;
+	ASTifelse->right = elseBranch;
+
+	return ASTifelse;
+}
+
+struct AST * AST_IfIfElse(char nodeType[50], char LHS1[50], struct AST * thenBranch1, char LHS2[50], struct AST * thenBranch2, struct * elseBranch){
+	struct AST * ASTififelse = malloc(sizeof(struct AST));
+	strcpy(ASTififelse->nodeType, nodeType);
+	strcpy(ASTififelse->LHS, LHS1);
+	strcpy(ASTififelse->RHS, "");
+
+	struct AST * ASTifelseBranch = malloc(sizeof(struct AST));
+	strcpy(ASTifelseBranch->nodeType, nodeType);
+	strcpy(ASTifelseBranch->LHS, LHS2);
+	strcpy(ASTifelseBranch->RHS, "");
+
+	ASTififelse->left = thenBranch1;
+	ASTififelse->right = ASTifelseBranch;
+
+	ASTifelseBranch->left = thenBranch2;
+	ASTifelseBranch->right = elseBranch;
+
+	return ASTififelse;
+}
+
 void printDots(int num){
 	for (int i = 0; i < num; i++)
 		printf("      ");

@@ -8,6 +8,8 @@ struct AST{
 	
 	struct AST * left;
 	struct AST * right;
+
+	int value;
 };
 
 
@@ -114,12 +116,17 @@ void printDots(int num){
 		printf("      ");
 }
 
-void printAST(struct AST* tree, int level){
-	if (tree == NULL) return;
-	printDots(level);
-	printf("%s\n", tree->nodeType);
-	printDots(level);
-	printf("%s %s\n", tree->LHS, tree->RHS);
-	if(tree->left != NULL) printAST(tree->left, level+1); else return;
-	if(tree->right != NULL) printAST(tree->right, level+1); else return;
+void printAST(struct AST* tree, int level) {
+    if (tree == NULL) return;
+    printDots(level);
+    printf("%s", tree->nodeType);
+    if (strcmp(tree->nodeType, "NUM") == 0 || strcmp(tree->nodeType, "ID") == 0) {
+        printf(" -> %d\n", tree->value);
+    } else {
+        printf("\n");
+    }
+    printDots(level);
+    printf("%s %s\n", tree->LHS, tree->RHS);
+    if (tree->left != NULL) printAST(tree->left, level + 1);
+    if (tree->right != NULL) printAST(tree->right, level + 1);
 }

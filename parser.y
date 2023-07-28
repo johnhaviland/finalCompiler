@@ -248,52 +248,11 @@ WriteStmt:	WRITE ID {
 		}
 ;
 
-REC:	NUMBER MULTIPLY REC {
-    		printf("\n RECOGNIZED RULE: NUMBER * REC\n");
-		result = result * $1;			
-	}
-
-	| NUMBER DIVIDE REC {
-    		printf("\n RECOGNIZED RULE: NUMBER / REC\n");
-		result = result / $1;			
-	}
-
-	| NUMBER PLUS REC {
-    		printf("\n RECOGNIZED RULE: NUMBER + REC\n");
-		result = result + $1;			
-	}
-
-	| NUMBER MINUS REC {
-    		printf("\n RECOGNIZED RULE: NUMBER - REC\n");
-		result = result - $1;			
-	}
-
-	| ID MULTIPLY REC {
-        	printf("\n RECOGNIZED RULE: ID * REC\n");
-		symTabAccess();
-		char id1[50];
-		int id2 = getValue($1, currentScope);
-		result = result * id2;
-	}
-
-	| ID DIVIDE REC	{
-        	printf("\n RECOGNIZED RULE: ID / REC\n");
-		symTabAccess();
-		char id1[50];
-		int id2 = getValue($1, currentScope);
-		result = result / id2;
-	}
-
-	| ID PLUS REC	{
-        	printf("\n RECOGNIZED RULE: ID + REC\n");
-		symTabAccess();
-		char id1[50];
-		int id2 = getValue($1, currentScope);
-		result = result + id2;
-	}
+REC:	NUMBER MATHOP REC {
+		result = result * $1;
+}
 	
-	| ID MINUS REC {
-        	printf("\n RECOGNIZED RULE: ID - REC\n");
+	| ID MATHOP REC {
 		symTabAccess();
 		char id1[50];
 		int id2 = getValue($1, currentScope);

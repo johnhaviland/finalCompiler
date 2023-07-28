@@ -34,55 +34,55 @@ ws          {delim}+
 				}
 			}
 						
-"int"		{words++; chars += strlen(yytext);
+"int"			{words++; chars += strlen(yytext);
 				printf("%s : TYPE\n", yytext);
 				yylval.string = strdup(yytext); 
 				return TYPE;
 			}
 
-"boolean"	{words++; chars += strlen(yytext);
+"bool"			{words++; chars += strlen(yytext);
 				printf("%s : TYPE\n", yytext);
 				yylval.string = strdup(yytext); 
 				return TYPE;
 			}
 
-"void"		{words++; chars += strlen(yytext);
+"void"			{words++; chars += strlen(yytext);
 				printf("%s : TYPE\n", yytext);
 				yylval.string = strdup(yytext); 
 				return TYPE;
 			}
 
-"float"		{words++; chars += strlen(yytext);
+"float"			{words++; chars += strlen(yytext);
 				printf("%s : TYPE\n", yytext);
 				yylval.string = strdup(yytext); 
 				return TYPE;
 			}
 
-"if"		{words++; chars += strlen(yytext);
+"if"			{words++; chars += strlen(yytext);
 				printf("%s : IF\n", yytext);
 				yylval.string = strdup(yytext); 
 				return IF;
 			}
 
-"else"		{words++; chars += strlen(yytext);
+"else"			{words++; chars += strlen(yytext);
 				printf("%s : ELSE\n", yytext);
 				yylval.string = strdup(yytext); 
 				return ELSE;
 			}
 
-"write"		{words++; chars += strlen(yytext);
+"write"			{words++; chars += strlen(yytext);
 				printf("%s : KEYWORD\n", yytext);
 				yylval.string = strdup(yytext); 
 				return WRITE;
 			}
 
-{ID}		{words++; chars += strlen(yytext);
+{ID}			{words++; chars += strlen(yytext);
 			  	printf("%s : IDENTIFIER\n",yytext);
 			  	yylval.string = strdup(yytext); 
 			  	return ID;
 			}
 			
-{NUMBER}	{words++; chars += strlen(yytext);
+{NUMBER}		{words++; chars += strlen(yytext);
 			  	printf("%s : NUMBER\n",yytext);
 			 	yylval.number = atoi(strdup(yytext)); 
 			  	return NUMBER;
@@ -101,27 +101,81 @@ ws          {delim}+
 			}
 
 "*"			{chars++;
-		  		printf("%s : MULTIPLY\n", yytext);
+		  		printf("%s : MATHOP\n", yytext);
 		  		yylval.string = strdup(yytext); 
-		  		return MULTIPLY;
+		  		return MATHOP;
 			}
 
 "/"			{chars++;
-		  		printf("%s : DIVIDE\n", yytext);
+		  		printf("%s : MATHOP\n", yytext);
 		  		yylval.string = strdup(yytext); 
-		  		return DIVIDE;
+		  		return MATHOP;
 			}
 
 "+"			{chars++;
-		  		printf("%s : PLUS\n", yytext);
+		  		printf("%s : MATHOP\n", yytext);
 		  		yylval.string = strdup(yytext); 
-		  		return PLUS;
+		  		return MATHOP;
 			}
 
 "-"			{chars++;
-		  		printf("%s : MINUS\n", yytext);
+		  		printf("%s : MATHOP\n", yytext);
 		  		yylval.string = strdup(yytext); 
-		  		return MINUS;
+		  		return MATHOP;
+			}
+
+"!"			{chars++;
+		  		printf("%s : NOT\n", yytext);
+		  		yylval.string = strdup(yytext); 
+		  		return NOT;
+			}
+
+"=="			{chars++;
+		  		printf("%s : COMPOP\n", yytext);
+		  		yylval.string = strdup(yytext); 
+		  		return COMPOP;
+			}
+
+"!="			{chars++;
+		  		printf("%s : COMPOP\n", yytext);
+		  		yylval.string = strdup(yytext); 
+		  		return COMPOP;
+			}
+
+"<"			{chars++;
+		  		printf("%s : COMPOP\n", yytext);
+		  		yylval.string = strdup(yytext); 
+		  		return COMPOP;
+			}
+
+">"			{chars++;
+		  		printf("%s : COMPOP\n", yytext);
+		  		yylval.string = strdup(yytext); 
+		  		return COMPOP;
+			}
+
+"<="			{chars++;
+		  		printf("%s : COMPOP\n", yytext);
+		  		yylval.string = strdup(yytext); 
+		  		return COMPOP;
+			}
+
+">="			{chars++;
+		  		printf("%s : COMPOP\n", yytext);
+		  		yylval.string = strdup(yytext); 
+		  		return COMPOP;
+			}
+
+"&&"			{chars++;
+		  		printf("%s : INCOP\n", yytext);
+		  		yylval.string = strdup(yytext); 
+		  		return INCOP;
+			}
+
+"||"			{chars++;
+		  		printf("%s : INCOP\n", yytext);
+		  		yylval.string = strdup(yytext); 
+		  		return INCOP;
 			}
 
 "("			{chars++;

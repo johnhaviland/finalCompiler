@@ -33,10 +33,9 @@ int semanticCheckPassed = 1;
 %token <string> ID
 %token <character> SEMICOLON
 %token <character> EQ 
-%token <character> PLUS
-%token <character> MINUS
-%token <character> MULTIPLY
-%token <character> DIVIDE
+%token <character> MATHOP
+%token <character> COMPOP
+%token <character> INCOP
 %token <number> NUMBER
 %token <string> WRITE
 %token <character> LPAREN
@@ -48,9 +47,10 @@ int semanticCheckPassed = 1;
 %token <character> COMMA
 %token <string> IF
 %token <string> ELSE
+%token <character> NOT
 
-%left PLUS MINUS
-%left MULTIPLY DIVIDE
+%left '+' '-'
+%left '*' '/'
 
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 %printer { fprintf(yyoutput, "%d", $$); } NUMBER;

@@ -133,6 +133,10 @@ Stmt:	SEMICOLON {}
 			$$ = $1;
 		}
 
+		| IfStmt {
+			$$ = $1;
+		}
+
 ;
 
 IfStmt: IF LPAREN Expr RPAREN LBRACE StmtList RBRACE {
@@ -141,7 +145,7 @@ IfStmt: IF LPAREN Expr RPAREN LBRACE StmtList RBRACE {
     $$->right = NULL;
 }
 | IF LPAREN Expr RPAREN LBRACE StmtList RBRACE ElseStmt {
-    $$ = AST_IfElse("IF_ELSE", "", $3, $6, $8);
+    $$ = AST_IfElse("IF_ELSE", $3, $6, $8);
 }
 
 ElseStmt: ELSE LBRACE StmtList RBRACE {

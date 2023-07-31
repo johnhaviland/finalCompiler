@@ -55,7 +55,7 @@ int semanticCheckPassed = 1;
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 %printer { fprintf(yyoutput, "%d", $$); } NUMBER;
 
-%type <ast> Program DeclList Decl VarDecl Stmt StmtList Expr REC Array FuncDecl PARAM IfStmt WriteStmt
+%type <ast> Program DeclList Decl VarDecl Stmt StmtList Expr REC Array FuncDecl PARAM IfStmt ElseStmt WriteStmt
 
 %start Program
 

@@ -35,6 +35,16 @@ void emitConstantIntAssignment (char * id1[50], char * id2[50]){
     fclose(IRcode);
 }
 
+void emitFunctionIR(char * functionName, char * parameters){
+    FILE * IRcode;
+    IRcode = fopen("IRcode.ir", "a");
+    fprintf(IRcode, "\n\n#### Function: %s ####\n\n", functionName);
+    fprintf(IRcode, "param %s\n", parameters);
+    fprintf(IRcode, "call %s\n", functionName);
+    fprintf(IRcode, "T0 = returnVal\n");
+    fclose(IRcode);
+}
+
 void emitIR(char * id1[50], char * id2[50], char * currentScope[50]){
     FILE * IRcode;
     IRcode = fopen("IRcode.ir", "a");
@@ -57,7 +67,7 @@ void addNumbers(int num){
 
 int sumOfNumbers(){
     int sum = 0;
-    for (int i = 0; i < 50; i++){
+    for (int i = 0; i < 10; i++){
         sum += numbers[i];
         numbers[i] = 0;
     }

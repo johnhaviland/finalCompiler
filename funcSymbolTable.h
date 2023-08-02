@@ -123,8 +123,8 @@ const char* getFuncVariableType(char itemName[50], char scope[]){
 }
 
 int compareFuncTypes(char itemName1[50], char itemName2[50],char scope[]){
-	const char* idType1 = getVariableType(itemName1, scope);
-	const char* idType2 = getVariableType(itemName2, scope);
+	const char* idType1 = getFuncVariableType(itemName1, scope);
+	const char* idType2 = getFuncVariableType(itemName2, scope);
 	
 	printf("%s = %s\n", idType1, idType2);
 	
@@ -136,4 +136,3 @@ int compareFuncTypes(char itemName1[50], char itemName2[50],char scope[]){
 		
 	else return 0;
 }
-    

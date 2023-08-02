@@ -35,7 +35,7 @@ int semanticCheckPassed = 1;
 %token <character> EQ 
 %token <character> MATHOP
 %token <character> COMPOP
-%token <character> INCOP
+%token <character> LOGOP
 %token <number> NUMBER
 %token <string> WRITE
 %token <character> LPAREN
@@ -55,7 +55,7 @@ int semanticCheckPassed = 1;
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 %printer { fprintf(yyoutput, "%d", $$); } NUMBER;
 
-%type <ast> Program DeclList Decl VarDecl Stmt StmtList Expr REC Array FuncDecl PARAM IfStmt ElseStmt WriteStmt
+%type <ast> Program DeclList Decl VarDecl Stmt StmtList Expr Rec Array FuncDecl IfStmt ElseStmt WriteStmt
 
 %start Program
 
@@ -116,7 +116,7 @@ VarDecl:	TYPE ID SEMICOLON {
 ;
 
 FuncDecl:	{}
-		| TYPE ID LPAREN PARAM RPAREN LBRACE VarDecl RBRACE {}
+		| TYPE ID LPAREN RPAREN LBRACE VarDecl RBRACE {}
 ;
 
 StmtList:	{}
@@ -136,7 +136,6 @@ Stmt:	SEMICOLON {}
 		| IfStmt {
 			$$ = $1;
 		}
-
 ;
 
 IfStmt: IF LPAREN Expr RPAREN LBRACE StmtList RBRACE {
@@ -144,7 +143,7 @@ IfStmt: IF LPAREN Expr RPAREN LBRACE StmtList RBRACE {
     $$->left = $6;
     $$->right = NULL;
 }
-| IF LPAREN Expr RPAREN LBRACE StmtList RBRACE ElseStmt {
+| IF LPAREN Expr RPAREN LBRACE StmtList ElseStmt RBRACE {
     $$ = AST_IfElse("IF_ELSE", $3, $6, $8);
 }
 
@@ -152,7 +151,9 @@ ElseStmt: ELSE LBRACE StmtList RBRACE {
     $$ = $3;
 }
 
-Expr:	ID EQ REC { 
+Expr:   Expr LOGOP Expr {}
+
+    	| ID EQ Rec { 
 		printf("\n RECOGNIZED RULE: Simplest expression\n"); 
            	char id1[50], id2[50];
             	sprintf(id1, "%s", $1);
@@ -240,6 +241,38 @@ Expr:	ID EQ REC {
                 emitMIPSConstantIntAssignment(id1, id2, numid);
             }
         }
+
+        | NUMBER COMPOP Rec {
+            $$ = AST_BinaryExpression($2, "", "");
+            $$->left = AST_Type("NUM", "", "");
+            $$->left->value = $1;
+            $$->right = $3;
+            $$->value = compareValues($1, $2, $3->value);
+
+            if ($$->value) {
+                printf("The comparison statement is TRUE!\n");
+            } 
+            else {
+                printf("The comparison statement is FALSE.\n");
+            }
+        }
+
+        | ID COMPOP Rec {
+            symTabAccess();
+            int id_value = getValue($1, currentScope);
+            $$ = AST_BinaryExpression($2, "", "");
+            $$->left = AST_Type("ID", "", "");
+            $$->left->value = id_value;
+            $$->right = $3;
+            $$->value = compareValues(id_value, $2, $3->value);
+
+            if ($$->value) {
+                printf("The comparison statement is TRUE!\n");
+            } 
+            else {
+                printf("The comparison statement is FALSE.\n");
+            }
+        }
 ;
 
 WriteStmt:	WRITE ID { 
@@ -260,7 +293,7 @@ WriteStmt:	WRITE ID {
 		}
 ;
 
-REC: NUMBER { 
+Rec: NUMBER { 
     printf("\n RECOGNIZED RULE: ADD STATEMENT NUM END\n");
     $$ = AST_Type("NUM", "", "");
     $$->value = $1;
@@ -274,7 +307,7 @@ REC: NUMBER {
     $$->value = id_value;
 }
 
-| NUMBER MATHOP REC {
+| NUMBER MATHOP Rec {
     $$ = AST_BinaryExpression($2, "", "");
     if (strcmp($2, "+") == 0) {
         $$->value = $1 + $3->value;
@@ -287,7 +320,7 @@ REC: NUMBER {
     }
 }
 
-| ID MATHOP REC {
+| ID MATHOP Rec {
     symTabAccess();
     int id_value = getValue($1, currentScope);
     $$ = AST_BinaryExpression($2, "", "");
@@ -303,15 +336,11 @@ REC: NUMBER {
 }
 ;
 
+| 
+
 Array:	LBRACK RBRACK {}
 	| LBRACK NUMBER RBRACK {}
 	| LBRACK ID RBRACK {}
-;
-
-
-PARAM:	{}
-	| TYPE ID {}
-	| COMMA TYPE ID PARAM {}
 ;
 
 %%

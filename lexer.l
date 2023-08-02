@@ -167,15 +167,15 @@ ws          {delim}+
 			}
 
 "&&"			{chars++;
-		  		printf("%s : INCOP\n", yytext);
+		  		printf("%s : LOGOP\n", yytext);
 		  		yylval.string = strdup(yytext); 
-		  		return INCOP;
+		  		return LOGOP;
 			}
 
 "||"			{chars++;
-		  		printf("%s : INCOP\n", yytext);
+		  		printf("%s : LOGOP\n", yytext);
 		  		yylval.string = strdup(yytext); 
-		  		return INCOP;
+		  		return LOGOP;
 			}
 
 "("			{chars++;

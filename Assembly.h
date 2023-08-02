@@ -42,7 +42,6 @@ void emitEndOfAssemblyCode(){
     fprintf(MIPScode, "li $v0,10\n");
     fprintf(MIPScode, "syscall\n");
     fprintf(MIPScode, ".end main\n");
-}
 
     fclose(MIPScode);
 }

@@ -111,6 +111,24 @@ struct AST * AST_IfIfElse(char nodeType[50], char LHS1[50], struct AST * thenBra
 	return ASTtype1;
 }
 
+int compareValues(int value1, const char* operator, int value2) {
+    if (strcmp(operator, "==") == 0) {
+        return value1 == value2;
+    } else if (strcmp(operator, "!=") == 0) {
+        return value1 != value2;
+    } else if (strcmp(operator, "<") == 0) {
+        return value1 < value2;
+    } else if (strcmp(operator, ">") == 0) {
+        return value1 > value2;
+    } else if (strcmp(operator, "<=") == 0) {
+        return value1 <= value2;
+    } else if (strcmp(operator, ">=") == 0) {
+        return value1 >= value2;
+    } else {
+        return 0;
+    }
+}
+
 void printDots(int num){
 	for (int i = 0; i < num; i++)
 		printf("      ");

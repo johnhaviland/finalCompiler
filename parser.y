@@ -13,9 +13,6 @@
 extern int yylex();
 extern int yyparse();
 extern FILE* yyin;
-
-FILE * IRcode;
-
 void yyerror(const char* s);
 char currentScope[50]; 
 int result = 0;
@@ -65,6 +62,7 @@ Program: DeclList  {
     $$ = $1;
 	printf("\n--- Abstract Syntax Tree ---\n\n");
 	printAST($$,0);
+    initAssemblyFile();
 };
 
 
@@ -82,7 +80,9 @@ Decl:	VarDecl
 	| StmtList
 ;
 
-VarDecl:	TYPE ID SEMICOLON { 
+VarDecl: {}
+
+        | TYPE ID SEMICOLON { 
     	char id1[50];
     	printf("\n RECOGNIZED RULE: Variable declaration %s\n", $2);
 	symTabAccess();
@@ -98,7 +98,8 @@ VarDecl:	TYPE ID SEMICOLON {
 	$$ = AST_Type("Type",$1,$2);
 	printf("-----------> %s", $$->LHS);
 }
-		| TYPE ID Array SEMICOLON {char id1[50];
+		| TYPE ID Array SEMICOLON {
+            char id1[50];
     	printf("\n RECOGNIZED RULE: Array declaration %s\n", $2);
 	symTabAccess();
 	int inSymTab = found($2, currentScope);
@@ -113,12 +114,46 @@ VarDecl:	TYPE ID SEMICOLON {
 	$$ = AST_Type("Type",$1,$2);
 	printf("-----------> %s", $$->LHS);
 }
+    	| TYPE ID COMMA VarDecl { 
+    	char id1[50];
+    	printf("\n RECOGNIZED RULE: Variable declaration %s\n", $2);
+	symTabAccess();
+	int inSymTab = found($2, currentScope);
+	if (inSymTab == 0) 
+		addItem($2, "Var", $1, 0, currentScope);
+	else
+		printf("SEMANTIC ERROR: Var %s is already in the symbol table", $2);
+	showSymTable();
+    	sprintf(id1, "%s", $2);
+    	int numid = getID(id1, currentScope);
+    	emitConstantIntAssignment ($2, numid);							
+	$$ = AST_Type("Type",$1,$2);
+	printf("-----------> %s", $$->LHS);
+}
 ;
 
 FuncDecl:	{}
-		| TYPE ID LPAREN RPAREN LBRACE VarDecl RBRACE {}
+		| TYPE ID LPAREN VarDecl RPAREN LBRACE Decl RBRACE {
+            char id1[50];
+    	    printf("\n RECOGNIZED RULE: Variable declaration %s\n", $2);
+	        funcSymTabAccess();
+	        int inFuncSymTab = found($2, currentScope);
+	        if (inFuncSymTab == 0){
+		        funcAddItem($2, "Func", $1, 0, currentScope);
+            }
+	        else{
+		        printf("SEMANTIC ERROR: Func %s is already in the symbol table", $2);
+            }
+	        showFuncSymTable();
+    	    sprintf(id1, "%s", $2);
+    	    int numid = getID(id1, currentScope);
+    	    emitConstantIntAssignment ($2, numid);							
+	        $$ = AST_Type("Type",$1,$2);
+	        printf("-----------> %s", $$->LHS);
+            emitFunctionIR();
+            emitMIPSFunctionDeclaration($2, $1);
+        }
 ;
-
 StmtList:	{}
 	| Stmt StmtList
 ;
@@ -347,6 +382,9 @@ Array:	LBRACK RBRACK {}
 
 int main(int argc, char**argv) {
 
+    initIRcodeFile();
+    initAssemblyFile();
+
 	printf("\n\n##### COMPILER STARTED #####\n\n");
 	if (argc > 1) {
 	    if(!(yyin = fopen(argv[1], "r"))) {
@@ -355,12 +393,10 @@ int main(int argc, char**argv) {
 	    } 
 	}
 
+	//yyparse();
 
-	initIRcodeFile();
-	initAssemblyFile();
-	yyparse();
 	emitEndOfAssemblyCode();
-
+    emitEndOfAssemblyCodeNEW();
 }
 
 void yyerror(const char* s) {

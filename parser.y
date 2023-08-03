@@ -132,28 +132,31 @@ VarDecl: {}
 }
 ;
 
-FuncDecl:	{}
-		| TYPE ID LPAREN VarDecl RPAREN LBRACE Decl RBRACE {
-            char id1[50];
-    	    printf("\n RECOGNIZED RULE: Variable declaration %s\n", $2);
-	        funcSymTabAccess();
-	        int inFuncSymTab = found($2, currentScope);
-	        if (inFuncSymTab == 0){
-		        funcAddItem($2, "Func", $1, 0, currentScope);
-            }
-	        else{
-		        printf("SEMANTIC ERROR: Func %s is already in the symbol table", $2);
-            }
-	        showFuncSymTable();
-    	    sprintf(id1, "%s", $2);
-    	    int numid = getID(id1, currentScope);
-    	    emitConstantIntAssignment ($2, numid);							
-	        $$ = AST_Type("Type",$1,$2);
-	        printf("-----------> %s", $$->LHS);
-            emitFunctionIR();
-            emitMIPSFunctionDeclaration($2, $1);
-        }
-;
+FuncDecl:   {}
+
+            | TYPE ID LPAREN VarDecl RPAREN LBRACE Decl RBRACE {
+                char id1[50];
+                printf("\n RECOGNIZED RULE: Function declaration %s\n", $2);
+                funcSymTabAccess();
+                int inFuncSymTab = found($2, currentScope);
+                
+                if (inFuncSymTab == 0) {
+                    funcAddItem($2, "Func", $1, 0, currentScope);
+                } 
+                else {
+                    printf("SEMANTIC ERROR: Func %s is already in the symbol table", $2);
+                }
+                showFuncSymTable();
+                sprintf(id1, "%s", $2);
+                int numid = getID(id1, currentScope);
+                emitConstantIntAssignment($2, numid);
+                $$ = AST_Type("Type", $1, $2);
+                printf("-----------> %s", $$->LHS);
+                emitFunctionIR($2, $4);
+                emitMIPSFunctionBody($2, $7, $4); 
+}
+
+
 StmtList:	{}
 	| Stmt StmtList
 ;

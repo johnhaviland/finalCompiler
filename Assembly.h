@@ -4,9 +4,11 @@
 void initAssemblyFile(){
     FILE * MIPScode;
     MIPScode = fopen("MIPScode.asm", "w");
+
     printf("opened MIPScode.asm\n");
     fprintf(MIPScode, ".text\n");
-    fprintf(MIPScode, "main:\n");
+    fprintf(MIPScode, ".globl main\n");
+        fprintf(MIPScode, "main: \n");
     fprintf(MIPScode, "# ==================================\n\n");
     printf("header printed\n");
 }
@@ -23,22 +25,51 @@ void emitMIPSAssignment(char * id1, char * id2){
 void emitMIPSConstantIntAssignment (char * id1, char * id2, int currentScope){
     FILE * MIPScode;
     MIPScode = fopen("MIPScode.asm", "a");
+
     fprintf(MIPScode, "li $t%d,%s\n\n", currentScope, id2);
 }
 
-void emitMIPSFunctionDeclaration(char *funcName, char *returnType) {
-    FILE *MIPScode;
+void emitMIPSFunctionBody(char* funcName, struct AST * funcBody, struct AST * funcParams) {
+    FILE* MIPScode;
     MIPScode = fopen("MIPScode.asm", "a");
 
-    fprintf(MIPScode, "%s:\n", funcName);
-    fprintf(MIPScode, "sw $ra, 0($sp)\n");
-    fprintf(MIPScode, "addi $sp, $sp, -4\n");
-    fprintf(MIPScode, "lw $ra, 4($sp)\n");
-    fprintf(MIPScode, "addi $sp, $sp, 4\n");
+    fprintf(MIPScode, "jal %s\n\n\t", funcName);
+    fprintf(MIPScode, "%s:\n\t", funcName);
+    emitMIPSFunctionBodyAST(MIPScode, funcBody);
     fprintf(MIPScode, "jr $ra\n");
 
     fclose(MIPScode);
 }
+
+void emitMIPSFunctionBodyAST(FILE * MIPScode, struct AST * ast) {
+    if (ast == NULL) {
+        return;
+    }
+
+    if (strcmp(ast->nodeType, "=") == 0){
+        char* lhs = ast->LHS;
+        char* rhs = ast->RHS;
+        fprintf(MIPScode, "lw $t0, %s\n\t", rhs);
+        fprintf(MIPScode, "sw $t0, %s\n\t", lhs);
+    } 
+    else if (strcmp(ast->nodeType, "write") == 0){
+        char* id = ast->LHS;
+        fprintf(MIPScode, "lw $a0, %s\n\t", id);
+        fprintf(MIPScode, "li $v0, 1\n\t");
+        fprintf(MIPScode, "syscall\n\t");
+    }
+
+    if (strcmp(ast->nodeType, "Param") == 0) {
+        char* paramName = ast->LHS;
+        int paramOffset = -4;
+        fprintf(MIPScode, "lw $t0, %d($fp)\n\t", paramOffset);
+        fprintf(MIPScode, "sw $t0, %s\n\t", paramName);
+    }
+
+    emitMIPSFunctionBodyAST(MIPScode, ast->left);
+    emitMIPSFunctionBodyAST(MIPScode, ast->right);
+}
+
 
 void emitMIPSWriteId(char * id, int count){
     FILE * MIPScode;

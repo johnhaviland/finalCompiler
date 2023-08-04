@@ -44,7 +44,9 @@ int semanticCheckPassed = 1;
 %token <character> COMMA
 %token <string> IF
 %token <string> ELSE
+%token <string> WHILE
 %token <character> NOT
+
 
 %left '+' '-'
 %left '*' '/'
@@ -177,20 +179,32 @@ Stmt:	SEMICOLON {}
 ;
 
 IfStmt: IF LPAREN Expr RPAREN LBRACE StmtList RBRACE {
-    $$ = AST_If("IF", "", $3);
-    $$->left = $6;
-    $$->right = NULL;
-}
-| IF LPAREN Expr RPAREN LBRACE StmtList ElseStmt RBRACE {
-    $$ = AST_IfElse("IF_ELSE", $3, $6, $8);
-}
+            $$ = AST_If("IF", "", $3);
+            $$->left = $6;
+            $$->right = NULL;
+        }
+        
+        | IF LPAREN Expr RPAREN LBRACE StmtList ElseStmt RBRACE {
+            $$ = AST_IfElse("IF_ELSE", $3, $6, $7);
+        }
 
-ElseStmt: ELSE LBRACE StmtList RBRACE {
-    $$ = $3;
-}
+WhileStmt:  WHILE LPAREN Expr RPAREN LBRACE StmtList RBRACE {
+                $$ = AST_If("WHILE", "", $3);
+                $$->left = $6;
+                $$->right = NULL;
+            }
+            
+            | WHILE LPAREN Expr RPAREN LBRACE StmtList ElseStmt RBRACE {
+                $$ = AST_IfElse("WHILE_ELSE", $3, $6, $7);
+            }
+
+ElseStmt:   ELSE LBRACE StmtList RBRACE {
+                $$ = $3;
+            }
 
 Expr:   Expr LOGOP Expr {}
 
+        | LPAREN Expr RPAREN {}
     	| ID EQ Rec { 
 		printf("\n RECOGNIZED RULE: Simplest expression\n"); 
            	char id1[50], id2[50];

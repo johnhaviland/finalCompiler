@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "symbolTable.h"
-#include "funcSymbolTable.h"
+//#include "funcSymbolTable.h"
 #include "AST.h"
 #include "IRcode.h"
 #include "Assembly.h"
@@ -54,7 +54,7 @@ int semanticCheckPassed = 1;
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 %printer { fprintf(yyoutput, "%d", $$); } NUMBER;
 
-%type <ast> Program DeclList Decl VarDecl Stmt StmtList Expr Rec Array FuncDecl IfStmt ElseStmt WriteStmt
+%type <ast> Program DeclList Decl VarDecl Stmt StmtList Expr Rec Array FuncDecl IfStmt WhileStmt ElseStmt WriteStmt
 
 %start Program
 
@@ -139,16 +139,16 @@ FuncDecl:   {}
             | TYPE ID LPAREN VarDecl RPAREN LBRACE Decl RBRACE {
                 char id1[50];
                 printf("\n RECOGNIZED RULE: Function declaration %s\n", $2);
-                funcSymTabAccess();
-                int inFuncSymTab = found($2, currentScope);
+                symTabAccess();
+                int inSymTab = found($2, currentScope);
                 
-                if (inFuncSymTab == 0) {
-                    funcAddItem($2, "Func", $1, 0, currentScope);
+                if (inSymTab == 0) {
+                    addItem($2, "Func", $1, 0, currentScope);
                 } 
                 else {
                     printf("SEMANTIC ERROR: Func %s is already in the symbol table", $2);
                 }
-                showFuncSymTable();
+                showSymTable();
                 sprintf(id1, "%s", $2);
                 int numid = getID(id1, currentScope);
                 emitConstantIntAssignment($2, numid);
@@ -387,8 +387,6 @@ Rec: NUMBER {
     }
 }
 ;
-
-| 
 
 Array:	LBRACK RBRACK {}
 	| LBRACK NUMBER RBRACK {}

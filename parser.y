@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "symbolTable.h"
 //#include "funcSymbolTable.h"
 #include "AST.h"
@@ -54,7 +55,7 @@ int semanticCheckPassed = 1;
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 %printer { fprintf(yyoutput, "%d", $$); } NUMBER;
 
-%type <ast> Program DeclList Decl VarDecl Stmt StmtList Expr Rec Array FuncDecl IfStmt WhileStmt ElseStmt WriteStmt
+%type <ast> Program DeclList Decl VarDecl Stmt StmtList Expr Rec Array FuncDecl IfStmt WhileStmt ElseStmt WriteStmt FuncStmt FuncBody
 
 %start Program
 
@@ -136,12 +137,16 @@ VarDecl: {}
 
 FuncDecl:   {}
 
-            | TYPE ID LPAREN VarDecl RPAREN LBRACE Decl RBRACE {
+            | TYPE ID LPAREN VarDecl RPAREN LBRACE FuncBody RBRACE {
+
                 char id1[50];
                 printf("\n RECOGNIZED RULE: Function declaration %s\n", $2);
                 symTabAccess();
                 int inSymTab = found($2, currentScope);
-                
+
+                // utilize AST for FuncBody here
+
+
                 if (inSymTab == 0) {
                     addItem($2, "Func", $1, 0, currentScope);
                 } 
@@ -176,6 +181,10 @@ Stmt:	SEMICOLON {}
 		| IfStmt {
 			$$ = $1;
 		}
+
+        | FuncStmt {
+            $$ = $1;
+        }
 ;
 
 IfStmt: IF LPAREN Expr RPAREN LBRACE StmtList RBRACE {
@@ -200,6 +209,18 @@ WhileStmt:  WHILE LPAREN Expr RPAREN LBRACE StmtList RBRACE {
 
 ElseStmt:   ELSE LBRACE StmtList RBRACE {
                 $$ = $3;
+            }
+
+FuncStmt:   ID LPAREN RPAREN {
+                printf("\n RECOGNIZED RULE: Function call %s\n", $1);
+            }
+
+            | ID LPAREN ID RPAREN {
+                printf("\n RECOGNIZED RULE: Function call %s with parameter %s\n", $1, $2);
+            }
+
+            | ID LPAREN NUMBER RPAREN {
+                printf("\n RECOGNIZED RULE: Function call %s with parameter %s\n", $1, $2);
             }
 
 Expr:   Expr LOGOP Expr {}
@@ -386,7 +407,13 @@ Rec: NUMBER {
         $$->value = id_value / $3->value;
     }
 }
+
+| LOGOP {}
 ;
+
+FuncBody:   Decl {
+
+            }
 
 Array:	LBRACK RBRACK {}
 	| LBRACK NUMBER RBRACK {}

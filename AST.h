@@ -21,7 +21,7 @@ struct AST * AST_assignment(char nodeType[50], char LHS[50], char RHS[50]){
 	strcpy(ASTassign->RHS, RHS);
 
 /*
-      	   =
+       =
 	 /   \
 	x     y
 

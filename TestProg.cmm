@@ -8,9 +8,10 @@ y = 11;
 
 a = 5;
 
-int increment(int z;){
-  z = z + 1;
+int array[4];
+
+int print(int z;){
+  write z;
 }
 
-new = increment(7);
-write new;
+write(4);

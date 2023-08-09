@@ -8,8 +8,9 @@ T2 = a
 T0 = 10
 T1 = 11
 T2 = 5
-T3 = z
-T0 = print
+T3 = array
+T4 = z
+T5 = print
 
 
 #### Function: print ####

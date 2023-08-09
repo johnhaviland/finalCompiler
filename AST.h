@@ -27,7 +27,7 @@ struct AST * AST_assignment(char nodeType[50], char LHS[50], char RHS[50]){
 
 */
 
-	return ASTassign;	
+	return ASTassign;
 }
 
 struct AST * AST_BinaryExpression(char nodeType[50], char LHS[50], char RHS[50]){
@@ -35,7 +35,7 @@ struct AST * AST_BinaryExpression(char nodeType[50], char LHS[50], char RHS[50])
 	strcpy(ASTBinExp->nodeType, nodeType);
 	strcpy(ASTBinExp->LHS, LHS);
 	strcpy(ASTBinExp->RHS, RHS);
-	
+
 	return ASTBinExp;
 }
 
@@ -46,7 +46,6 @@ struct AST * AST_Type(char nodeType[50], char LHS[50], char RHS[50]){
 	strcpy(ASTtype->RHS, RHS);
 		
 	return ASTtype;
-	
 }
 
 struct AST * AST_Func(char nodeType[50], char LHS[50], char RHS[50]){
@@ -68,6 +67,7 @@ struct AST * AST_Write(char nodeType[50], char LHS[50], char RHS[50]){
 }
 
 struct AST * AST_If(char nodeType[50], char LHS[50], struct AST * thenBranch){
+	printf("AST_If() is called\n");
 	struct AST * ASTtype = malloc(sizeof(struct AST));
 	strcpy(ASTtype->nodeType, nodeType);
 	strcpy(ASTtype->LHS, LHS);

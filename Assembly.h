@@ -142,6 +142,7 @@ void emitEndOfAssemblyCode(){
     fprintf(MIPScode, "syscall\n");
     fprintf(MIPScode, ".end main\n");
 
+
     fclose(MIPScode);
 
     printf("emitEndOfAssemblyCode() used\n");
@@ -162,4 +163,5 @@ void emitEndOfAssemblyCodeNEW(){
 
     fclose(MIPScode);
 }
+  
     

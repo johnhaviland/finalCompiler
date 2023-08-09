@@ -65,8 +65,8 @@ Program: DeclList  {
     $$ = $1;
 	printf("\n--- Abstract Syntax Tree ---\n\n");
 	printAST($$,0);
-    initAssemblyFile();
-};
+}
+;
 
 
 DeclList:	Decl DeclList	{
@@ -99,24 +99,68 @@ VarDecl: {}
     	int numid = getID(id1, currentScope);
     	emitConstantIntAssignment ($2, numid);							
 	$$ = AST_Type("Type",$1,$2);
-	printf("-----------> %s", $$->LHS);
+	//printf("-----------> %s", $$->LHS);
 }
-		| TYPE ID Array SEMICOLON {
+        | TYPE ID LBRACK NUMBER RBRACK SEMICOLON {
             char id1[50];
-    	printf("\n RECOGNIZED RULE: Array declaration %s\n", $2);
-	symTabAccess();
-	int inSymTab = found($2, currentScope);
-	if (inSymTab == 0) 
-		addItem($2, "Array", $1, 0, currentScope);
-	else
-		printf("SEMANTIC ERROR: Array %s is already in the symbol table", $2);
-	showSymTable();
-    	sprintf(id1, "%s", $2);
-    	int numid = getID(id1, currentScope);
-    	emitConstantIntAssignment($2, numid);							
-	$$ = AST_Type("Type",$1,$2);
-	printf("-----------> %s", $$->LHS);
-}
+            printf("\n RECOGNIZED RULE: Array declaration %s\n", $2);
+            symTabAccess();
+            int inSymTab = found($2, currentScope);
+    
+            if (inSymTab == 0) {
+                addItem($2, "Array", $1, $4, currentScope);
+            } 
+            else {
+                printf("SEMANTIC ERROR: Array %s is already in the symbol table", $2);
+            }
+            
+            showSymTable();
+            sprintf(id1, "%s", $2);
+            int numid = getID(id1, currentScope);
+            emitConstantIntAssignment($2, numid);
+            $$ = AST_Type("Type", $1, $2);
+        }
+
+        | TYPE ID LBRACK ID RBRACK SEMICOLON {
+            char id1[50];
+            printf("\n RECOGNIZED RULE: Array declaration %s\n", $2);
+            symTabAccess();
+            int inSymTab = found($2, currentScope);
+    
+            if (inSymTab == 0) {
+                addItem($2, "Array", $1, $4, currentScope);
+            } 
+            else {
+                printf("SEMANTIC ERROR: Array %s is already in the symbol table", $2);
+            }
+            
+            showSymTable();
+            sprintf(id1, "%s", $2);
+            int numid = getID(id1, currentScope);
+            emitConstantIntAssignment($2, numid);
+            $$ = AST_Type("Type", $1, $2);
+        }
+
+        | TYPE ID LBRACK RBRACK SEMICOLON {
+            char id1[50];
+            printf("\n RECOGNIZED RULE: Array declaration %s\n", $2);
+            symTabAccess();
+            int inSymTab = found($2, currentScope);
+    
+            if (inSymTab == 0) {
+                addItem($2, "Array", $1, 0, currentScope);
+            } 
+            else {
+                printf("SEMANTIC ERROR: Array %s is already in the symbol table", $2);
+            }
+            
+            showSymTable();
+            sprintf(id1, "%s", $2);
+            int numid = getID(id1, currentScope);
+            emitConstantIntAssignment($2, numid);
+            $$ = AST_Type("Type", $1, $2);
+        }
+
     	| TYPE ID COMMA VarDecl { 
     	char id1[50];
     	printf("\n RECOGNIZED RULE: Variable declaration %s\n", $2);
@@ -131,21 +175,16 @@ VarDecl: {}
     	int numid = getID(id1, currentScope);
     	emitConstantIntAssignment ($2, numid);							
 	$$ = AST_Type("Type",$1,$2);
-	printf("-----------> %s", $$->LHS);
+	//printf("-----------> %s", $$->LHS);
 }
 ;
 
-FuncDecl:   {}
-
-            | TYPE ID LPAREN VarDecl RPAREN LBRACE FuncBody RBRACE {
+FuncDecl:   TYPE ID LPAREN VarDecl RPAREN LBRACE DeclList RBRACE {
 
                 char id1[50];
                 printf("\n RECOGNIZED RULE: Function declaration %s\n", $2);
                 symTabAccess();
                 int inSymTab = found($2, currentScope);
-
-                // utilize AST for FuncBody here
-
 
                 if (inSymTab == 0) {
                     addItem($2, "Func", $1, 0, currentScope);
@@ -153,16 +192,17 @@ FuncDecl:   {}
                 else {
                     printf("SEMANTIC ERROR: Func %s is already in the symbol table", $2);
                 }
+
                 showSymTable();
                 sprintf(id1, "%s", $2);
                 int numid = getID(id1, currentScope);
                 emitConstantIntAssignment($2, numid);
                 $$ = AST_Type("Type", $1, $2);
-                printf("-----------> %s", $$->LHS);
+                //printf("-----------> %s", $$->LHS);
                 emitFunctionIR($2, $4);
                 emitMIPSFunctionBody($2, $7, $4); 
-}
-
+            }
+;
 
 StmtList:	{}
 	| Stmt StmtList
@@ -226,6 +266,9 @@ FuncStmt:   ID LPAREN RPAREN {
 Expr:   Expr LOGOP Expr {}
 
         | LPAREN Expr RPAREN {}
+
+        | NOT Expr {}
+
     	| ID EQ Rec { 
 		printf("\n RECOGNIZED RULE: Simplest expression\n"); 
            	char id1[50], id2[50];
@@ -415,10 +458,26 @@ FuncBody:   Decl {
 
             }
 
-Array:	LBRACK RBRACK {}
-	| LBRACK NUMBER RBRACK {}
-	| LBRACK ID RBRACK {}
+Array:	LBRACK RBRACK {
+            int size = 0; // Default size for no initialization
+            emitMIPSArrayDeclaration($$, size, NULL);
+            $$ = $1; // Return the ID of the array for later use
+        }
+        | LBRACK NUMBER RBRACK {
+            int arraySizeAttr = $2;
+            int size = 0; // Default size for no initialization
+            emitMIPSArrayDeclaration($$, size, NULL);
+            $$ = $1; // Return the ID of the array for later use
+        }
+        | LBRACK ID RBRACK {
+            int arraySizeAttr = getValue($2, currentScope);
+            int size = 0; // Default size for no initialization
+            emitMIPSArrayDeclaration($$, size, NULL);
+            $$ = $1; // Return the ID of the array for later use
+        }
 ;
+
+
 
 %%
 

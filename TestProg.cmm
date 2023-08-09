@@ -4,14 +4,24 @@ int y;
 int a;
 
 x = 10;
-y = 11;
+y = 15;
 
-a = 5;
+a = x - y;
 
 int array[4];
 
 int print(int z;){
-  write z;
+  while(x > a){
+    if (x < y){
+      write x;
+      
+
+    }
+
+    else{
+      write z;
+    }
+  }
 }
 
 print(4);

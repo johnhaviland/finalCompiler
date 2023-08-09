@@ -46,14 +46,14 @@ int setValue(char itemName[50], int itemVal, char scope[50]){
 }
 
 void showSymTable(){
-	printf("itemID    itemName    itemKind    itemType     ArrayLength    itemSCope\n");
-	printf("=====================================================================\n");
+	printf("itemID    itemName    itemVal    itemKind     itemType     arrayLength       itemScope\n");
+	printf("=======================================================================================\n");
 	
 	for (int i = 0; i < symTabIndex; i++){
-		printf("%5d %15s  %7d  %7s %7s %6d %15s \n",symTabItems[i].itemID, symTabItems[i].itemName, symTabItems[i].itemVal, symTabItems[i].itemKind, symTabItems[i].itemType, symTabItems[i].arrayLength, symTabItems[i].scope);
+		printf("%5d %8s  %10d  %9s %10s %12d %15s %s \n",symTabItems[i].itemID, symTabItems[i].itemName, symTabItems[i].itemVal, symTabItems[i].itemKind, symTabItems[i].itemType, symTabItems[i].arrayLength, symTabItems[i].scope, "G");
 	}
 	
-	printf("=====================================================================\n");
+	printf("=======================================================================================\n");
 }
 
 int found(char itemName[50], char scope[50]){
@@ -87,7 +87,7 @@ int getValue(char itemName[50],char scope[50]){
 }
 
 void printVal(){
-	for(int i = 0; i < 4; i++) {
+	for(int i = 0; i < 10; i++) {
 		printf("%7d\n", symTabItems[i].itemVal);
 	}
 }
@@ -135,4 +135,24 @@ int compareTypes(char itemName1[50], char itemName2[50],char scope[50]){
 		
 	else return 0;
 }
-    
+
+void getArrayValuesFromTable(char itemName[50], char scope[50], int values[]) {
+    for (int i = 0; i < SYMTAB_SIZE; i++) {
+        int str1 = strcmp(symTabItems[i].itemName, itemName);
+        int str2 = strcmp(symTabItems[i].scope, scope);
+
+        if (str1 == 0 && str2 == 0) {
+            if (strcmp(symTabItems[i].itemKind, "Array") == 0) {
+                for (int j = 0; j < symTabItems[i].arrayLength; j++) {
+                    values[j] = symTabItems[i].itemVal + j;
+                }
+                return;
+            } else {
+                printf("ERROR: %s is not an array in scope %s\n", itemName, scope);
+                return;
+            }
+        }
+    }
+
+    printf("ERROR: Array %s not found in scope %s\n", itemName, scope);
+}

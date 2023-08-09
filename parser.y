@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "symbolTable.h"
 //#include "funcSymbolTable.h"
@@ -30,10 +31,10 @@ int semanticCheckPassed = 1;
 %token <string> TYPE
 %token <string> ID
 %token <character> SEMICOLON
-%token <character> EQ 
-%token <character> MATHOP
-%token <character> COMPOP
-%token <character> LOGOP
+%token <string> EQ 
+%token <string> MATHOP
+%token <string> COMPOP
+%token <string> LOGOP
 %token <number> NUMBER
 %token <string> WRITE
 %token <character> LPAREN
@@ -51,6 +52,10 @@ int semanticCheckPassed = 1;
 
 %left '+' '-'
 %left '*' '/'
+
+%left AND
+%left OR
+%left '!'
 
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 %printer { fprintf(yyoutput, "%d", $$); } NUMBER;
@@ -218,6 +223,10 @@ Stmt:	SEMICOLON {}
 			$$ = $1;
 		}
 
+        | WhileStmt {
+            $$ = $1;
+        }
+
 		| IfStmt {
 			$$ = $1;
 		}
@@ -243,6 +252,10 @@ WhileStmt:  WHILE LPAREN Expr RPAREN LBRACE StmtList RBRACE {
                 $$->right = NULL;
             }
             
+            | WHILE LPAREN Expr RPAREN LBRACE StmtList IfStmt RBRACE {
+                $$ = AST_IfElse("WHILE_IF", $3, $6, $7);
+            }
+
             | WHILE LPAREN Expr RPAREN LBRACE StmtList ElseStmt RBRACE {
                 $$ = AST_IfElse("WHILE_ELSE", $3, $6, $7);
             }
@@ -374,8 +387,9 @@ Expr:   Expr LOGOP Expr {}
         }
 
         | ID COMPOP Rec {
-            symTabAccess();
+            //symTabAccess();
             int id_value = getValue($1, currentScope);
+
             $$ = AST_BinaryExpression($2, "", "");
             $$->left = AST_Type("ID", "", "");
             $$->left->value = id_value;
@@ -410,7 +424,7 @@ WriteStmt:	WRITE ID {
 ;
 
 Rec: NUMBER { 
-    printf("\n RECOGNIZED RULE: ADD STATEMENT NUM END\n");
+    //printf("\n RECOGNIZED RULE: ADD STATEMENT NUM END\n");
     $$ = AST_Type("NUM", "", "");
     $$->value = $1;
 }
@@ -483,6 +497,11 @@ Array:	LBRACK RBRACK {
 
 int main(int argc, char**argv) {
 
+    clock_t start, end;
+    double cpu_time_used;
+
+    start = clock();
+
     initIRcodeFile();
     initAssemblyFile();
 
@@ -495,6 +514,12 @@ int main(int argc, char**argv) {
 	}
 
 	yyparse();
+
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("Program took %f seconds to execute\n", cpu_time_used);
+    return 0;
+
 
 	emitEndOfAssemblyCode();
     emitEndOfAssemblyCodeNEW();

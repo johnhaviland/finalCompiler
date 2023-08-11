@@ -539,13 +539,13 @@ Array:	LBRACK RBRACK {
 
 int main(int argc, char**argv){
 
-	clock_t start, end;
+	clock_t start, end;		// clock variables for performance
 	double cpu_time_used;
 
-	start = clock();
+	start = clock();		// start of timer
 
-	initIRcodeFile();
-	initAssemblyFile();
+	initIRcodeFile();		// IR code initialization function (header)
+	initAssemblyFile();		// Assembly code initialization function (header)
 
 	printf("\n\n##### COMPILER STARTED #####\n\n");
 	
@@ -556,18 +556,19 @@ int main(int argc, char**argv){
 	    	} 
 	}
 
-	yyparse();
+	yyparse();			// start parsing through input code
 
-	end = clock();
+	end = clock();			// end of timer
 	cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 	printf("Program took %f seconds to execute\n", cpu_time_used);
 
-	emitEndOfAssemblyCode();
-	emitEndOfAssemblyCodeNEW();
+	emitEndOfAssemblyCode();	// Assembly code end-of-file function
+	//emitEndOfAssemblyCodeNEW();
 
 	return 0;
 }
 
+// Function for parse error message
 void yyerror(const char* s){
 	fprintf(stderr, "Parse error: %s\n", s);
 	exit(1);

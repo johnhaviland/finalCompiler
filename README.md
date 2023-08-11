@@ -67,6 +67,7 @@ The first step is to download all of the files that make up the compiler and pla
 | parser.y | https://github.com/johnhaviland/finalCompiler/blob/main/parser.y|
 | registerManager.h | https://github.com/johnhaviland/finalCompiler/blob/main/registerManager.h |
 | symbolTable.h | https://github.com/johnhaviland/finalCompiler/blob/main/symbolTable.h |
+
 Once all of these files have been downloaded and placed in the same directory, create a .cmm file in that directory.  This can be accomplished in a few ways.  The first is with touch, which will simply create a file in your directory.
 ```sh
 touch yourfile.cmm

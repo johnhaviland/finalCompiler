@@ -1,11 +1,11 @@
 // Header file to create Assembly code
 #include <stdio.h>
 
+// Function that emits the MIPS assembly code header into 'MIPScode.asm'
 void initAssemblyFile(){
     FILE * MIPScode;
     MIPScode = fopen("MIPScode.asm", "w");
-
-    printf("opened MIPScode.asm\n");
+    //printf("opened MIPScode.asm\n");
     fprintf(MIPScode, ".text\n");
     fprintf(MIPScode, ".globl main\n");
     fprintf(MIPScode, "main: \n");
@@ -13,9 +13,10 @@ void initAssemblyFile(){
 
     fclose(MIPScode);
 
-    printf("header printed\n");
+    printf("initAssemblyFile() used\n");
 }
 
+// Function that emits MIPS assembly code for variable assignment to MIPScode.asm
 void emitMIPSAssignment(char * id1, char * id2){
     FILE * MIPScode;
     MIPScode = fopen("MIPScode.asm", "a");
@@ -29,6 +30,7 @@ void emitMIPSAssignment(char * id1, char * id2){
     printf("emitMIPSAssignment() used\n");
 }
 
+// Function that emits MIPS assembly code for constant int assignment to MIPScode.asm
 void emitMIPSConstantIntAssignment (char * id1, char * id2, int currentScope){
     FILE * MIPScode;
     MIPScode = fopen("MIPScode.asm", "a");
@@ -40,6 +42,7 @@ void emitMIPSConstantIntAssignment (char * id1, char * id2, int currentScope){
     printf("emitMIPSConstantIntAssignment() used\n");
 }
 
+// Function that emits MIPS assembly code for a function body to MIPScode.asm
 void emitMIPSFunctionBody(char* funcName, struct AST * funcBody, struct AST * funcParams) {
     FILE* MIPScode;
     MIPScode = fopen("MIPScode.asm", "a");
@@ -54,6 +57,8 @@ void emitMIPSFunctionBody(char* funcName, struct AST * funcBody, struct AST * fu
     printf("emitMIPSFunctionBody() used\n");
 }
 
+// Function that emits MIPS assembly code from the AST of the function body recursively
+// Helper function to emitMIPSFunctionBody()
 void emitMIPSFunctionBodyAST(FILE * MIPScode, struct AST * ast) {
     if (ast == NULL) {
         return;
@@ -86,7 +91,7 @@ void emitMIPSFunctionBodyAST(FILE * MIPScode, struct AST * ast) {
     printf("emitMIPSFunctionBodyAST() used\n");
 }
 
-
+// Function that emits MIPS assembly code for 'write' statements to MIPScode.asm
 void emitMIPSWriteId(char * id, int count){
     FILE * MIPScode;
     MIPScode = fopen("MIPScode.asm", "a");
@@ -101,6 +106,7 @@ void emitMIPSWriteId(char * id, int count){
     printf("emitMIPSWriteId() used\n");
 }
 
+// Function that emits MIPS assembly code for constant int array assignments to MIPScode.asm
 void emitMIPSConstantIntArrayAssignment(char * id, int size, int values[]) {
     FILE * MIPScode;
     MIPScode = fopen("MIPScode.asm", "a");
@@ -115,6 +121,7 @@ void emitMIPSConstantIntArrayAssignment(char * id, int size, int values[]) {
     printf("emitMIPSConstantIntArrayAssignment() used\n");
 }
 
+// Function that emits MIPS assembly code for array declaration to MIPScode.asm
 void emitMIPSArrayDeclaration(char * id, int size, int values[]) {
     FILE * MIPScode;
     MIPScode = fopen("MIPScode.asm", "a");
@@ -131,6 +138,7 @@ void emitMIPSArrayDeclaration(char * id, int size, int values[]) {
     printf("emitMIPSArrayDeclaration() used\n");
 }
 
+// Function that emits MIPS assembly code for end-of-program termination to MIPScode.asm
 void emitEndOfAssemblyCode(){
     FILE * MIPScode;
     MIPScode = fopen("MIPScode.asm", "a");
@@ -148,6 +156,8 @@ void emitEndOfAssemblyCode(){
     printf("emitEndOfAssemblyCode() used\n");
 }
 
+// Function that emits MIPS assembly code for end-of-program termination to console
+// Used as a debugging function
 void emitEndOfAssemblyCodeNEW(){
     FILE * MIPScode;
     MIPScode = fopen("MIPScode.asm", "a");
@@ -163,5 +173,3 @@ void emitEndOfAssemblyCodeNEW(){
 
     fclose(MIPScode);
 }
-  
-    

@@ -111,6 +111,19 @@ struct AST * AST_IfElse(char nodeType[50], char LHS[50], struct AST * thenBranch
 	return ASTtype;
 }
 
+// Function that creates and returns AST node for 'while-else' statement
+struct AST * AST_WhileElse(char nodeType[50], char LHS[50], struct AST * thenBranch, struct AST * elseBranch){
+	struct AST * ASTtype = malloc(sizeof(struct AST));
+	strcpy(ASTtype->nodeType, nodeType);
+	strcpy(ASTtype->LHS, LHS);
+	strcpy(ASTtype->RHS, "");
+
+	ASTtype->left = thenBranch;
+	ASTtype->right = elseBranch;
+
+	return ASTtype;
+}
+
 // Create and return AST node for a nested 'if-else' statement
 struct AST * AST_IfIfElse(char nodeType[50], char LHS1[50], struct AST * thenBranch1, char LHS2[50], struct AST * thenBranch2, struct AST * elseBranch){
 	struct AST * ASTtype1 = malloc(sizeof(struct AST));
